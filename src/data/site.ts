@@ -20,7 +20,7 @@ export const SITE = {
 // Jde o veřejné klíče určené pro frontend – nejsou to tajemství.
 export const FORM_CONFIG = {
   emailjsPublicKey: 'OwmvA6xONh2s5ESbm',
-  emailjsServiceId: 'service_vgfs2x1',
+  emailjsServiceId: 'service_yx70mqc',
   emailjsTemplateId: 'template_96ldb6d',
   cloudinaryCloudName: 'drrzl7evt',
   cloudinaryUploadPreset: 'AntikZvole',
