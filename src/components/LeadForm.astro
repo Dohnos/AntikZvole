@@ -15,25 +15,34 @@ import { SITE, SERVICES } from '../data/site';
         <p class="field-error" id="f-name-err">Vyplňte prosím jméno.</p>
       </div>
       <div class="field">
-        <label for="f-phone">Telefon <span class="req" aria-hidden="true">*</span></label>
+        <label for="f-email">E-mail <span class="req" aria-hidden="true">*</span></label>
         <input
-          id="f-phone"
-          name="phone"
-          type="tel"
-          inputmode="tel"
-          autocomplete="tel"
+          id="f-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          inputmode="email"
           required
-          pattern="[0-9+\(\) \-]{9,20}"
-          placeholder="např. 603 123 456"
+          maxlength="120"
+          pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}"
+          placeholder="vas@email.cz"
         />
-        <p class="field-error" id="f-phone-err">Zadejte prosím platné telefonní číslo.</p>
+        <p class="field-error" id="f-email-err">Zadejte prosím platný e-mail.</p>
       </div>
     </div>
 
     <div class="field">
-      <label for="f-email">E-mail <span class="opt">(nepovinné)</span></label>
-      <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" />
-      <p class="field-error" id="f-email-err">E-mail nemá správný tvar.</p>
+      <label for="f-phone">Telefon <span class="opt">(nepovinné)</span></label>
+      <input
+        id="f-phone"
+        name="phone"
+        type="tel"
+        inputmode="tel"
+        autocomplete="tel"
+        pattern="[0-9+\(\) \-]{9,20}"
+        placeholder="např. 603 123 456"
+      />
+      <p class="field-error" id="f-phone-err">Telefonní číslo nemá správný tvar.</p>
     </div>
 
     <div class="field">
@@ -61,19 +70,19 @@ import { SITE, SERVICES } from '../data/site';
       <label class="upload" for="f-photos">
         <Icon name="camera" size={22} />
         <span><strong>Přidat fotky</strong> z galerie nebo fotoaparátu</span>
-        <input id="f-photos" name="photos" type="file" accept="image/*" multiple class="visually-hidden" />
+        <input id="f-photos" type="file" accept="image/*" multiple class="visually-hidden" />
       </label>
       <ul class="file-list" id="file-list" aria-live="polite"></ul>
     </div>
 
-    <!-- Antispam past – lidé ji nevidí -->
+    <!-- Antispam past – nenese běžný název, aby ji prohlížeč nevyplnil automaticky -->
     <div class="hp" aria-hidden="true">
-      <label for="f-web">Web</label>
-      <input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off" />
+      <label for="f-hp">Nevyplňujte</label>
+      <input id="f-hp" name="az_hp_7f3" type="text" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" />
     </div>
 
     <div class="field field-check">
-      <input id="f-gdpr" name="gdpr" type="checkbox" required />
+      <input id="f-gdpr" type="checkbox" required />
       <label for="f-gdpr">
         Beru na vědomí <a href="/zpracovani-osobnich-udaju/" target="_blank" rel="noopener">informace o zpracování osobních údajů</a> pro vyřízení poptávky.
         <span class="req" aria-hidden="true">*</span>
@@ -82,16 +91,27 @@ import { SITE, SERVICES } from '../data/site';
     </div>
 
     <button type="submit" class="btn btn-primary btn-lg btn-block" id="f-submit">
+      <span class="btn-spinner" aria-hidden="true"></span>
       <span class="btn-label">Odeslat poptávku</span>
-      <Icon name="arrow" size={20} />
+      <Icon name="arrow" size={20} class="btn-arrow" />
     </button>
 
-    <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+    <p class="form-status" id="form-status" role="alert"></p>
 
     <p class="form-alt">
       Raději voláte? <a href={`tel:${SITE.phone}`}><strong>{SITE.phoneDisplay}</strong></a>
     </p>
   </form>
+
+  <!-- Překryv během odesílání -->
+  <div class="sending" id="sending" hidden>
+    <div class="sending-box" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <p class="sending-title" id="sending-title">Odesíláme vaši poptávku…</p>
+      <p class="sending-step" id="sending-step">Chvilku strpení, nezavírejte prosím stránku.</p>
+      <div class="progress" id="progress" hidden><span id="progress-bar"></span></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -99,14 +119,22 @@ import { SITE, SERVICES } from '../data/site';
 
   const MAX_FILES = 10;
   const MAX_EDGE = 2000; // px – zmenšení fotek z mobilu = rychlejší odeslání
+  const TIMEOUT = 45_000; // ms na jeden požadavek
 
-  const form = document.getElementById('lead-form') as HTMLFormElement;
-  const fileInput = document.getElementById('f-photos') as HTMLInputElement;
-  const fileList = document.getElementById('file-list') as HTMLUListElement;
-  const status = document.getElementById('form-status') as HTMLParagraphElement;
-  const submit = document.getElementById('f-submit') as HTMLButtonElement;
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const form = $<HTMLFormElement>('lead-form');
+  const card = $<HTMLDivElement>('poptavka');
+  const fileInput = $<HTMLInputElement>('f-photos');
+  const fileList = $<HTMLUListElement>('file-list');
+  const status = $<HTMLParagraphElement>('form-status');
+  const submit = $<HTMLButtonElement>('f-submit');
   const submitLabel = submit.querySelector('.btn-label') as HTMLSpanElement;
-  const service = document.getElementById('f-service') as HTMLSelectElement;
+  const service = $<HTMLSelectElement>('f-service');
+  const sending = $<HTMLDivElement>('sending');
+  const sendingTitle = $<HTMLParagraphElement>('sending-title');
+  const sendingStep = $<HTMLParagraphElement>('sending-step');
+  const progress = $<HTMLDivElement>('progress');
+  const progressBar = $<HTMLSpanElement>('progress-bar');
   let files: File[] = [];
 
   // Předvyplnění služby z CTA odkazů (data-service)
@@ -146,6 +174,16 @@ import { SITE, SERVICES } from '../data/site';
     renderFiles();
   });
 
+  const withTimeout = async (url: string, init: RequestInit) => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), TIMEOUT);
+    try {
+      return await fetch(url, { ...init, signal: ctrl.signal });
+    } finally {
+      clearTimeout(t);
+    }
+  };
+
   const shrink = async (file: File): Promise<Blob> => {
     try {
       const bmp = await createImageBitmap(file);
@@ -165,15 +203,18 @@ import { SITE, SERVICES } from '../data/site';
     const body = new FormData();
     body.append('file', await shrink(file));
     body.append('upload_preset', C.cloudinaryUploadPreset);
-    const r = await fetch(`https://api.cloudinary.com/v1_1/${C.cloudinaryCloudName}/image/upload`, { method: 'POST', body });
-    if (!r.ok) throw new Error('upload');
+    const r = await withTimeout(`https://api.cloudinary.com/v1_1/${C.cloudinaryCloudName}/image/upload`, {
+      method: 'POST',
+      body,
+    });
+    if (!r.ok) throw new Error(`Cloudinary ${r.status}: ${await r.text()}`);
     return (await r.json()).secure_url as string;
   };
 
   const validate = (): boolean => {
     let firstInvalid: HTMLElement | null = null;
     form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input[id^="f-"], textarea').forEach((el) => {
-      if (el.id === 'f-photos' || el.id === 'f-web') return;
+      if (el.id === 'f-photos' || el.id === 'f-hp') return;
       if (el.type !== 'checkbox') el.value = el.value.trim();
       const ok = el.checkValidity();
       el.setAttribute('aria-invalid', String(!ok));
@@ -189,32 +230,52 @@ import { SITE, SERVICES } from '../data/site';
     return !firstInvalid;
   };
 
-  const setBusy = (busy: boolean, text = 'Odeslat poptávku') => {
+  const setStep = (title: string, step: string, done?: number, total?: number) => {
+    sendingTitle.textContent = title;
+    sendingStep.textContent = step;
+    progress.hidden = total === undefined;
+    if (total) progressBar.style.width = `${Math.round(((done ?? 0) / total) * 100)}%`;
+  };
+
+  const setBusy = (busy: boolean) => {
     submit.disabled = busy;
     submit.classList.toggle('is-busy', busy);
-    submitLabel.textContent = text;
+    submitLabel.textContent = busy ? 'Odesílám…' : 'Odeslat poptávku';
+    card.classList.toggle('is-sending', busy);
+    sending.hidden = !busy;
+    form.inert = busy;
   };
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (submit.disabled) return;
     status.textContent = '';
     status.classList.remove('is-error');
     if (!validate()) return;
 
     const data = new FormData(form);
-    if (data.get('website')) {
-      window.location.href = '/dekujeme/';
-      return;
-    }
+    const get = (k: string) => String(data.get(k) ?? '').trim();
+    // Past na roboty: poptávku nikdy nezahazujeme, jen ji označíme.
+    const suspicious = get('az_hp_7f3') !== '';
 
+    setBusy(true);
     try {
       let urls: string[] = [];
       if (files.length) {
-        setBusy(true, `Nahrávám fotky (${files.length})…`);
-        urls = await Promise.all(files.map(upload));
+        let done = 0;
+        setStep('Nahráváme fotky…', `0 z ${files.length}`, 0, files.length);
+        urls = await Promise.all(
+          files.map(async (f) => {
+            const u = await upload(f);
+            done++;
+            setStep('Nahráváme fotky…', `${done} z ${files.length}`, done, files.length);
+            return u;
+          }),
+        );
       }
-      setBusy(true, 'Odesílám…');
-      const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+
+      setStep('Odesíláme vaši poptávku…', 'Už jen okamžik.');
+      const r = await withTimeout('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -222,24 +283,28 @@ import { SITE, SERVICES } from '../data/site';
           template_id: C.emailjsTemplateId,
           user_id: C.emailjsPublicKey,
           template_params: {
-            name: data.get('name'),
-            phone: data.get('phone'),
-            // {{email}} je v šabloně i v Cc a Reply To – musí být platná adresa, nebo prázdné.
-            // Text typu „Nebylo zadáno“ by vytvořil neplatnou adresu a e-mail by se nedoručil.
-            email: String(data.get('email') ?? '').trim(),
-            service: data.get('service'),
-            message: data.get('message'),
+            name: get('name'),
+            email: get('email'), // povinné a ověřené – šablona ho používá v Reply To a Cc
+            phone: get('phone') || 'Neuvedeno',
+            service: get('service'),
+            message: (suspicious ? '[Možný spam – vyplněna skrytá past]\n\n' : '') + get('message'),
             image_urls: urls.length ? urls.join(',\n') : 'Žádné přiložené fotografie',
           },
         }),
       });
-      if (!r.ok) throw new Error('send');
+      if (!r.ok) throw new Error(`EmailJS ${r.status}: ${await r.text()}`);
+
+      setStep('Odesláno ✓', 'Děkujeme, přesměrovávám…');
       window.location.href = '/dekujeme/';
-    } catch {
+    } catch (err) {
+      console.error('Odeslání poptávky selhalo:', err);
       setBusy(false);
       status.classList.add('is-error');
       status.textContent =
-        'Odeslání se nepovedlo. Zkuste to prosím znovu, nebo nám rovnou zavolejte na 603 540 576.';
+        (err as Error)?.name === 'AbortError'
+          ? 'Odesílání trvá příliš dlouho. Zkontrolujte připojení a zkuste to znovu, nebo nám zavolejte na 603 540 576.'
+          : 'Odeslání se nepovedlo. Zkuste to prosím znovu, nebo nám rovnou zavolejte na 603 540 576.';
+      status.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
   });
 
@@ -251,4 +316,7 @@ import { SITE, SERVICES } from '../data/site';
       document.getElementById(`${el.id}-err`)?.classList.remove('show');
     }
   });
+
+  // Návrat tlačítkem Zpět (bfcache) – formulář nesmí zůstat zamčený
+  window.addEventListener('pageshow', () => setBusy(false));
 </script>
