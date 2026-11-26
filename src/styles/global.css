@@ -3,21 +3,22 @@
    ========================================================================== */
 
 :root {
-  --bg: #faf8f4;
+  /* Čistě černobílá paleta */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --alt: #f2eee6;
-  --ink: #1c1917;
-  --muted: #57534e;
-  --line: #e4ded3;
-  --accent: #9a3412;
-  --accent-hover: #7c2d12;
-  --accent-soft: #fbeee6;
-  --error: #b91c1c;
-  --radius: 14px;
-  --shadow: 0 1px 2px rgb(28 25 23 / 0.04), 0 12px 32px -12px rgb(28 25 23 / 0.18);
+  --alt: #f4f4f4;
+  --ink: #0a0a0a;
+  --muted: #525252;
+  --line: #e2e2e2;
+  --accent: #0a0a0a;
+  --accent-hover: #333333;
+  --accent-soft: #f4f4f4;
+  --error: #0a0a0a;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 16px 40px -16px rgb(0 0 0 / 0.18);
   --header-h: 68px;
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  /* Jediný font celého webu */
+  --font: var(--font-inter), system-ui, sans-serif;
 }
 
 *,
@@ -41,7 +42,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--font);
+  font-feature-settings: 'cv11', 'ss03';
   font-size: 1.0625rem; /* 17px */
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -66,9 +68,9 @@ img {
 h1,
 h2,
 h3 {
-  font-family: var(--font-serif);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
   margin: 0 0 0.5em;
   text-wrap: balance;
 }
@@ -82,7 +84,8 @@ h2 {
 }
 
 h3 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
 }
 
 p {
@@ -251,7 +254,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgb(250 248 244 / 0.94);
+  background: rgb(255 255 255 / 0.94);
   backdrop-filter: saturate(1.4) blur(8px);
   border-bottom: 1px solid var(--line);
 }
@@ -264,17 +267,17 @@ a:hover {
 }
 
 .logo {
-  font-family: var(--font-serif);
-  font-size: 1.45rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: var(--ink);
   text-decoration: none;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   margin-right: auto;
 }
 
 .logo span {
-  color: var(--accent);
+  font-weight: 400;
 }
 
 .logo:hover {
@@ -336,9 +339,6 @@ a:hover {
     gap: 64px;
   }
 
-  .hero-copy {
-    padding-top: 24px;
-  }
 }
 
 .hero-lead {
@@ -380,6 +380,15 @@ a:hover {
 
 .center-actions {
   justify-content: center;
+}
+
+.hero-img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+  background: var(--alt);
 }
 
 /* Mobil: kratší hero, aby byl formulář co nejdřív na dosah */
@@ -495,7 +504,7 @@ textarea {
 
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%231c1917' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%230a0a0a' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 42px;
@@ -504,7 +513,7 @@ select {
 input:hover,
 select:hover,
 textarea:hover {
-  border-color: #cfc7b9;
+  border-color: #b5b5b5;
 }
 
 input:focus,
@@ -513,18 +522,24 @@ textarea:focus {
   outline: none;
   border-color: var(--accent);
   background: var(--surface);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: 0 0 0 3px #e5e5e5;
 }
 
 [aria-invalid='true'] {
-  border-color: var(--error);
+  border-color: var(--ink);
+  border-width: 2px;
 }
 
 .field-error {
   display: none;
   margin: 0;
   font-size: 0.875rem;
+  font-weight: 600;
   color: var(--error);
+}
+
+.field-error::before {
+  content: '! ';
 }
 
 .field-error.show {
@@ -537,7 +552,7 @@ textarea:focus {
   gap: 12px;
   min-height: 56px;
   padding: 12px 16px;
-  border: 1.5px dashed #cfc7b9;
+  border: 1.5px dashed #b5b5b5;
   border-radius: 10px;
   background: var(--bg);
   color: var(--muted);
@@ -647,8 +662,10 @@ textarea:focus {
 .form-status.is-error {
   padding: 12px 14px;
   border-radius: 10px;
-  background: #fef2f2;
-  color: var(--error);
+  background: var(--alt);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .form-alt {
@@ -840,8 +857,7 @@ textarea:focus {
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
@@ -950,17 +966,27 @@ textarea:focus {
 }
 
 .cta-dark {
-  background: var(--ink);
+  background: #171717;
   color: #fff;
 }
 
 .cta-dark .cta-text {
-  color: #d6d3d1;
+  color: #d4d4d4;
+}
+
+.cta-dark .btn-primary {
+  background: #fff;
+  color: var(--ink);
+}
+
+.cta-dark .btn-primary:hover {
+  background: #e5e5e5;
+  color: var(--ink);
 }
 
 .cta-dark .btn-ghost {
   color: #fff;
-  border-color: #57534e;
+  border-color: #525252;
 }
 
 .cta-dark .btn-ghost:hover {
@@ -997,8 +1023,8 @@ textarea:focus {
 /* ---------- Patička ---------- */
 
 .site-footer {
-  background: #141210;
-  color: #d6d3d1;
+  background: #000000;
+  color: #d4d4d4;
   padding: 56px 0 0;
   font-size: 0.95rem;
 }
@@ -1018,9 +1044,7 @@ textarea:focus {
   color: #fff;
 }
 
-.logo-light span {
-  color: #fdba74;
-}
+
 
 .footer-grid {
   display: grid;
@@ -1062,10 +1086,10 @@ textarea:focus {
 }
 
 .footer-bottom {
-  border-top: 1px solid #2e2a27;
+  border-top: 1px solid #262626;
   padding-block: 20px;
   font-size: 0.875rem;
-  color: #a8a29e;
+  color: #a3a3a3;
 }
 
 .footer-bottom p {
@@ -1082,9 +1106,9 @@ textarea:focus {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-  background: rgb(250 248 244 / 0.97);
+  background: rgb(255 255 255 / 0.97);
   border-top: 1px solid var(--line);
-  box-shadow: 0 -6px 20px -10px rgb(28 25 23 / 0.25);
+  box-shadow: 0 -6px 20px -10px rgb(0 0 0 / 0.2);
 }
 
 .mobile-bar .btn {
