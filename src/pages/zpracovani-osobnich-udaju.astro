@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../data/site';
+const op = SITE.operator;
+---
+
+<Base
+  title="Zpracování osobních údajů | Antik Zvole"
+  description="Informace o zpracování osobních údajů odeslaných přes poptávkový formulář na webu Antik Zvole."
+>
+  <article class="section">
+    <div class="container narrow prose">
+      <p class="eyebrow">GDPR</p>
+      <h1>Zpracování osobních údajů z poptávkového formuláře</h1>
+      <p>
+        Tyto informace se týkají výhradně osobních údajů, které nám poskytnete prostřednictvím poptávkového formuláře na
+        webu www.antikzvole.cz, v souladu s nařízením Evropského parlamentu a Rady (EU) 2016/679 (GDPR).
+      </p>
+
+      <h2>1. Správce osobních údajů</h2>
+      <p>
+        <strong>{op.name}</strong>, IČO {op.ico}, se sídlem {op.street}, {op.zip}
+        {op.city}<br />
+        E-mail: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>, telefon:
+        <a href={`tel:${SITE.phone}`}>{SITE.phoneDisplay}</a>
+      </p>
+
+      <h2>2. Jaké údaje zpracováváme</h2>
+      <ul>
+        <li>jméno a příjmení,</li>
+        <li>telefonní číslo,</li>
+        <li>e-mailovou adresu (pokud ji vyplníte),</li>
+        <li>obsah zprávy a zvolenou službu,</li>
+        <li>fotografie, které k poptávce přiložíte.</li>
+      </ul>
+      <p>
+        Do zprávy ani na fotografie prosím neuvádějte údaje, které k vyřízení poptávky nejsou potřeba (např. rodná čísla,
+        čísla dokladů nebo osoby na fotografiích).
+      </p>
+
+      <h2>3. Účel a právní základ zpracování</h2>
+      <p>
+        Údaje zpracováváme, abychom mohli vyřídit vaši poptávku – kontaktovat vás, posoudit nabízené předměty, připravit
+        nabídku výkupu nebo vyklízení a domluvit další postup.
+      </p>
+      <p>
+        Právním základem je provedení opatření před uzavřením smlouvy na vaši žádost podle čl. 6 odst. 1 písm. b) GDPR.
+        Poskytnutí údajů je dobrovolné, bez jména, telefonu a popisu však poptávku nemůžeme vyřídit.
+      </p>
+
+      <h2>4. Jak dlouho údaje uchováváme</h2>
+      <p>
+        Po dobu nezbytnou k vyřízení poptávky, nejdéle však 12 měsíců od jejího odeslání. Pokud na poptávku naváže
+        uzavření smlouvy (výkup, vyklízení), uchováváme údaje po dobu stanovenou příslušnými právními předpisy (např.
+        účetními a daňovými).
+      </p>
+
+      <h2>5. Kdo k údajům má přístup</h2>
+      <p>
+        Údaje nepředáváme třetím stranám pro marketingové účely a neprodáváme je. K technickému zajištění formuláře
+        využíváme tyto zpracovatele:
+      </p>
+      <ul>
+        <li><strong>EmailJS</strong> – doručení obsahu formuláře do naší e-mailové schránky,</li>
+        <li><strong>Cloudinary</strong> – uložení fotografií přiložených k poptávce,</li>
+        <li><strong>Seznam.cz, a.s.</strong> – provoz naší e-mailové schránky.</li>
+      </ul>
+      <p>
+        Někteří zpracovatelé mohou údaje zpracovávat i mimo Evropský hospodářský prostor. V takovém případě se tak děje
+        pouze na základě rozhodnutí Evropské komise o odpovídající ochraně nebo standardních smluvních doložek dle čl. 46
+        GDPR.
+      </p>
+
+      <h2>6. Vaše práva</h2>
+      <p>V souvislosti se zpracováním osobních údajů máte právo:</p>
+      <ul>
+        <li>na přístup ke svým osobním údajům,</li>
+        <li>na opravu nepřesných údajů,</li>
+        <li>na výmaz („právo být zapomenut“),</li>
+        <li>na omezení zpracování,</li>
+        <li>na přenositelnost údajů,</li>
+        <li>vznést námitku proti zpracování.</li>
+      </ul>
+      <p>
+        Svá práva můžete uplatnit e-mailem na <a href={`mailto:${SITE.email}`}>{SITE.email}</a> nebo písemně na adrese
+        sídla správce. Máte také právo podat stížnost u dozorového úřadu – Úřadu pro ochranu osobních údajů, Pplk.
+        Sochora 27, 170 00 Praha 7, <a href="https://uoou.gov.cz/" rel="noopener">uoou.gov.cz</a>.
+      </p>
+
+      <h2>7. Automatizované rozhodování a cookies</h2>
+      <p>
+        Nedochází k automatizovanému rozhodování ani profilování. Web nepoužívá analytické ani marketingové cookies.
+      </p>
+
+      <p class="muted">Tyto informace jsou účinné od 26. 11. 2026.</p>
+
+      <p><a href="/#poptavka" class="btn btn-primary">Zpět k poptávce</a></p>
+    </div>
+  </article>
+</Base>

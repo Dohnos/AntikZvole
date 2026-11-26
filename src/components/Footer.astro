@@ -1,0 +1,44 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../data/site';
+const op = SITE.operator;
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <a href="/" class="logo logo-light">Antik <span>Zvole</span></a>
+      <p class="footer-text">
+        Výkup starožitností, retro nábytku a knih. Vyklízení pozůstalostí na Moravě. Platba v hotovosti ihned.
+      </p>
+    </div>
+    <div>
+      <p class="footer-heading">Kontakt</p>
+      <ul class="footer-list">
+        <li>
+          <a href={`tel:${SITE.phone}`}><Icon name="phone" size={18} /> {SITE.phoneDisplay}</a>
+        </li>
+        <li>
+          <a href={`mailto:${SITE.email}`}><Icon name="mail" size={18} /> {SITE.email}</a>
+        </li>
+        <li><Icon name="pin" size={18} /> {op.street}, {op.zip} {op.city}</li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-heading">Odkazy</p>
+      <ul class="footer-list">
+        <li><a href="/#poptavka">Nezávazná poptávka</a></li>
+        <li><a href="/#co-vykupujeme">Co vykupujeme</a></li>
+        <li><a href="/#vyklizeni">Vyklízení pozůstalostí</a></li>
+        <li><a href="/zpracovani-osobnich-udaju/">Zpracování osobních údajů</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>
+      &copy; {SITE.copyrightYear}
+      {op.name}, IČO {op.ico}, {op.street}, {op.zip}
+      {op.city}
+    </p>
+  </div>
+</footer>

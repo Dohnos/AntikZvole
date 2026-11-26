@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '../data/site';
+---
+
+<Base title="Děkujeme za poptávku | Antik Zvole" description="Vaše poptávka byla odeslána." noindex>
+  <section class="section">
+    <div class="container narrow center">
+      <div class="success-icon"><Icon name="check" size={36} /></div>
+      <h1>Děkujeme, poptávka je odeslaná</h1>
+      <p class="hero-lead">Ozveme se vám co nejdříve. Spěcháte? Zavolejte nám rovnou.</p>
+      <div class="hero-actions center-actions">
+        <a href={`tel:${SITE.phone}`} class="btn btn-primary btn-lg">
+          <Icon name="phone" size={20} />
+          <span>{SITE.phoneDisplay}</span>
+        </a>
+        <a href="/" class="btn btn-ghost btn-lg">Zpět na úvod</a>
+      </div>
+    </div>
+  </section>
+</Base>

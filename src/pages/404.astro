@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '../data/site';
+---
+
+<Base title="Stránka nenalezena | Antik Zvole" description="Požadovaná stránka neexistuje." noindex>
+  <section class="section">
+    <div class="container narrow center">
+      <h1>Tato stránka neexistuje</h1>
+      <p class="hero-lead">Chcete nám nabídnout věci k výkupu? Pokračujte na poptávku nebo zavolejte.</p>
+      <div class="hero-actions center-actions">
+        <a href="/#poptavka" class="btn btn-primary btn-lg">Poslat poptávku</a>
+        <a href={`tel:${SITE.phone}`} class="btn btn-ghost btn-lg">
+          <Icon name="phone" size={20} />
+          <span>{SITE.phoneDisplay}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

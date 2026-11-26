@@ -1,0 +1,252 @@
+---
+import Icon from './Icon.astro';
+import { SITE, SERVICES } from '../data/site';
+---
+
+<div class="form-card" id="poptavka">
+  <h2 class="form-title">Nezávazná poptávka</h2>
+  <p class="form-lead">Popište, co nabízíte, ideálně přiložte fotky. Ocenění je zdarma a nezávazné.</p>
+
+  <form id="lead-form" class="lead-form" novalidate>
+    <div class="field-row">
+      <div class="field">
+        <label for="f-name">Jméno <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="100" />
+        <p class="field-error" id="f-name-err">Vyplňte prosím jméno.</p>
+      </div>
+      <div class="field">
+        <label for="f-phone">Telefon <span class="req" aria-hidden="true">*</span></label>
+        <input
+          id="f-phone"
+          name="phone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          required
+          pattern="[0-9+\(\) \-]{9,20}"
+          placeholder="např. 603 123 456"
+        />
+        <p class="field-error" id="f-phone-err">Zadejte prosím platné telefonní číslo.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-email">E-mail <span class="opt">(nepovinné)</span></label>
+      <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" />
+      <p class="field-error" id="f-email-err">E-mail nemá správný tvar.</p>
+    </div>
+
+    <div class="field">
+      <label for="f-service">Mám zájem o</label>
+      <select id="f-service" name="service">
+        {SERVICES.map((s) => <option value={s}>{s}</option>)}
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="f-message">Co nabízíte? <span class="req" aria-hidden="true">*</span></label>
+      <textarea
+        id="f-message"
+        name="message"
+        rows="4"
+        required
+        maxlength="3000"
+        placeholder="Např. 3 obrazy, porcelán po babičce, knihovna cca 200 knih… Uveďte i obec."
+      ></textarea>
+      <p class="field-error" id="f-message-err">Napište prosím pár slov o předmětech.</p>
+    </div>
+
+    <div class="field">
+      <span class="label">Fotky <span class="opt">(nepovinné, až 10 ks)</span></span>
+      <label class="upload" for="f-photos">
+        <Icon name="camera" size={22} />
+        <span><strong>Přidat fotky</strong> z galerie nebo fotoaparátu</span>
+        <input id="f-photos" name="photos" type="file" accept="image/*" multiple class="visually-hidden" />
+      </label>
+      <ul class="file-list" id="file-list" aria-live="polite"></ul>
+    </div>
+
+    <!-- Antispam past – lidé ji nevidí -->
+    <div class="hp" aria-hidden="true">
+      <label for="f-web">Web</label>
+      <input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="field field-check">
+      <input id="f-gdpr" name="gdpr" type="checkbox" required />
+      <label for="f-gdpr">
+        Beru na vědomí <a href="/zpracovani-osobnich-udaju/" target="_blank" rel="noopener">informace o zpracování osobních údajů</a> pro vyřízení poptávky.
+        <span class="req" aria-hidden="true">*</span>
+      </label>
+      <p class="field-error" id="f-gdpr-err">Bez potvrzení nelze poptávku odeslat.</p>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg btn-block" id="f-submit">
+      <span class="btn-label">Odeslat poptávku</span>
+      <Icon name="arrow" size={20} />
+    </button>
+
+    <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+
+    <p class="form-alt">
+      Raději voláte? <a href={`tel:${SITE.phone}`}><strong>{SITE.phoneDisplay}</strong></a>
+    </p>
+  </form>
+</div>
+
+<script>
+  import { FORM_CONFIG as C } from '../data/site';
+
+  const MAX_FILES = 10;
+  const MAX_EDGE = 2000; // px – zmenšení fotek z mobilu = rychlejší odeslání
+
+  const form = document.getElementById('lead-form') as HTMLFormElement;
+  const fileInput = document.getElementById('f-photos') as HTMLInputElement;
+  const fileList = document.getElementById('file-list') as HTMLUListElement;
+  const status = document.getElementById('form-status') as HTMLParagraphElement;
+  const submit = document.getElementById('f-submit') as HTMLButtonElement;
+  const submitLabel = submit.querySelector('.btn-label') as HTMLSpanElement;
+  const service = document.getElementById('f-service') as HTMLSelectElement;
+  let files: File[] = [];
+
+  // Předvyplnění služby z CTA odkazů (data-service)
+  document.addEventListener('click', (e) => {
+    const link = (e.target as HTMLElement).closest<HTMLElement>('[data-service]');
+    if (link?.dataset.service) service.value = link.dataset.service;
+  });
+
+  const renderFiles = () => {
+    fileList.replaceChildren(
+      ...files.map((f, i) => {
+        const li = document.createElement('li');
+        const name = document.createElement('span');
+        name.textContent = f.name;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'file-remove';
+        btn.setAttribute('aria-label', `Odebrat ${f.name}`);
+        btn.textContent = '×';
+        btn.addEventListener('click', () => {
+          files.splice(i, 1);
+          renderFiles();
+        });
+        li.append(name, btn);
+        return li;
+      }),
+    );
+  };
+
+  fileInput.addEventListener('change', () => {
+    for (const f of Array.from(fileInput.files ?? [])) {
+      if (!f.type.startsWith('image/')) continue;
+      if (files.length >= MAX_FILES) break;
+      if (!files.some((x) => x.name === f.name && x.size === f.size)) files.push(f);
+    }
+    fileInput.value = '';
+    renderFiles();
+  });
+
+  const shrink = async (file: File): Promise<Blob> => {
+    try {
+      const bmp = await createImageBitmap(file);
+      const scale = Math.min(1, MAX_EDGE / Math.max(bmp.width, bmp.height));
+      if (scale === 1 && file.size < 3_000_000) return file;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * scale);
+      canvas.height = Math.round(bmp.height * scale);
+      canvas.getContext('2d')!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      return await new Promise<Blob>((res) => canvas.toBlob((b) => res(b ?? file), 'image/jpeg', 0.85));
+    } catch {
+      return file;
+    }
+  };
+
+  const upload = async (file: File): Promise<string> => {
+    const body = new FormData();
+    body.append('file', await shrink(file));
+    body.append('upload_preset', C.cloudinaryUploadPreset);
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${C.cloudinaryCloudName}/image/upload`, { method: 'POST', body });
+    if (!r.ok) throw new Error('upload');
+    return (await r.json()).secure_url as string;
+  };
+
+  const validate = (): boolean => {
+    let firstInvalid: HTMLElement | null = null;
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input[id^="f-"], textarea').forEach((el) => {
+      if (el.id === 'f-photos' || el.id === 'f-web') return;
+      if (el.type !== 'checkbox') el.value = el.value.trim();
+      const ok = el.checkValidity();
+      el.setAttribute('aria-invalid', String(!ok));
+      const err = document.getElementById(`${el.id}-err`);
+      if (err) {
+        err.classList.toggle('show', !ok);
+        if (!ok) el.setAttribute('aria-describedby', err.id);
+        else el.removeAttribute('aria-describedby');
+      }
+      if (!ok && !firstInvalid) firstInvalid = el;
+    });
+    (firstInvalid as HTMLElement | null)?.focus();
+    return !firstInvalid;
+  };
+
+  const setBusy = (busy: boolean, text = 'Odeslat poptávku') => {
+    submit.disabled = busy;
+    submit.classList.toggle('is-busy', busy);
+    submitLabel.textContent = text;
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.textContent = '';
+    status.classList.remove('is-error');
+    if (!validate()) return;
+
+    const data = new FormData(form);
+    if (data.get('website')) {
+      window.location.href = '/dekujeme/';
+      return;
+    }
+
+    try {
+      let urls: string[] = [];
+      if (files.length) {
+        setBusy(true, `Nahrávám fotky (${files.length})…`);
+        urls = await Promise.all(files.map(upload));
+      }
+      setBusy(true, 'Odesílám…');
+      const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_id: C.emailjsServiceId,
+          template_id: C.emailjsTemplateId,
+          user_id: C.emailjsPublicKey,
+          template_params: {
+            name: data.get('name'),
+            phone: data.get('phone'),
+            email: data.get('email') || 'Nebylo zadáno',
+            service: data.get('service'),
+            message: data.get('message'),
+            image_urls: urls.length ? urls.join(',\n') : 'Žádné přiložené fotografie',
+          },
+        }),
+      });
+      if (!r.ok) throw new Error('send');
+      window.location.href = '/dekujeme/';
+    } catch {
+      setBusy(false);
+      status.classList.add('is-error');
+      status.textContent =
+        'Odeslání se nepovedlo. Zkuste to prosím znovu, nebo nám rovnou zavolejte na 603 540 576.';
+    }
+  });
+
+  // Po první chybě validujeme průběžně
+  form.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.getAttribute('aria-invalid') === 'true' && el.checkValidity()) {
+      el.setAttribute('aria-invalid', 'false');
+      document.getElementById(`${el.id}-err`)?.classList.remove('show');
+    }
+  });
+</script>

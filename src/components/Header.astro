@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../data/site';
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">
+      Antik <span>Zvole</span>
+    </a>
+    <nav class="header-nav" aria-label="Hlavní navigace">
+      <a href="/#co-vykupujeme">Co vykupujeme</a>
+      <a href="/#vyklizeni">Vyklízení</a>
+      <a href="/#jak-to-funguje">Jak to funguje</a>
+      <a href="/#otazky">Otázky</a>
+    </nav>
+    <div class="header-cta">
+      <a href={`tel:${SITE.phone}`} class="btn btn-ghost btn-sm header-phone">
+        <Icon name="phone" size={18} />
+        <span>{SITE.phoneDisplay}</span>
+      </a>
+      <a href="/#poptavka" class="btn btn-primary btn-sm">Poptávka</a>
+    </div>
+  </div>
+</header>

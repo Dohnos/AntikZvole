@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../data/site';
+
+interface Props {
+  title: string;
+  text?: string;
+  service?: string;
+  dark?: boolean;
+}
+const { title, text, service, dark = false } = Astro.props;
+---
+
+<section class:list={['cta-band', { 'cta-dark': dark }]}>
+  <div class="container cta-inner">
+    <div>
+      <h2 class="cta-title">{title}</h2>
+      {text && <p class="cta-text">{text}</p>}
+    </div>
+    <div class="cta-actions">
+      <a href="#poptavka" class="btn btn-primary btn-lg" data-service={service}>
+        <span>Poslat poptávku</span>
+        <Icon name="arrow" size={20} />
+      </a>
+      <a href={`tel:${SITE.phone}`} class="btn btn-ghost btn-lg">
+        <Icon name="phone" size={20} />
+        <span>{SITE.phoneDisplay}</span>
+      </a>
+    </div>
+  </div>
+</section>

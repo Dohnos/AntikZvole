@@ -1,0 +1,16 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../data/site';
+---
+
+<!-- Lepicí CTA lišta jen na mobilu – telefon a poptávka vždy na dosah palce -->
+<div class="mobile-bar" role="region" aria-label="Rychlý kontakt">
+  <a href={`tel:${SITE.phone}`} class="btn btn-ghost">
+    <Icon name="phone" size={20} />
+    <span>Zavolat</span>
+  </a>
+  <a href="/#poptavka" class="btn btn-primary">
+    <Icon name="mail" size={20} />
+    <span>Poptávka</span>
+  </a>
+</div>
