@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /dekujeme/
+
+Sitemap: https://www.antikzvole.cz/sitemap-index.xml

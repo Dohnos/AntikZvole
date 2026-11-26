@@ -1,0 +1,324 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '../data/site';
+
+import imgAntique from '../assets/img/hero_antique.jpg';
+import imgFurniture from '../assets/img/antique_furniture.jpg';
+import imgRetro from '../assets/img/retro_items.jpg';
+import imgBooks from '../assets/img/old_books.jpg';
+import imgCleanout from '../assets/img/cleanout_service.jpg';
+
+const title = 'Výkup starožitností a vyklízení pozůstalostí | Antik Zvole – Morava';
+const description =
+  'Vykoupíme starožitnosti, retro nábytek, elektroniku a staré knihy. Vyklízení pozůstalostí po celé Moravě. Ocenění z fotek zdarma, platba v hotovosti ihned. Volejte 603 540 576.';
+
+const categories = [
+  {
+    title: 'Starožitnosti',
+    img: imgAntique,
+    alt: 'Starožitný psací stroj, kapesní hodinky a staré knihy',
+    service: 'Výkup starožitností',
+    items: ['Obrazy, grafiky, rámy', 'Hodiny, hodinky, stříbro', 'Porcelán, sklo, keramika', 'Šperky, mince, vyznamenání'],
+  },
+  {
+    title: 'Retro nábytek a design',
+    img: imgFurniture,
+    alt: 'Retro křesla a dýhovaná komoda z 60. let',
+    service: 'Výkup retro nábytku a designu',
+    items: ['Křesla a židle (i k renovaci)', 'Komody, stolky, knihovny', 'Lampy, lustry, dekorace', 'Design 60.–80. let'],
+  },
+  {
+    title: 'Retro elektronika a drobnosti',
+    img: imgRetro,
+    alt: 'Staré tranzistorové rádio a fotoaparát',
+    service: 'Výkup retro elektroniky a drobností',
+    items: ['Rádia, magnetofony, gramofony', 'Fotoaparáty a optika', 'Gramodesky', 'Hračky a sběratelské předměty'],
+  },
+  {
+    title: 'Staré knihy a tiskoviny',
+    img: imgBooks,
+    alt: 'Staré knihy v kožené vazbě',
+    service: 'Výkup starých knih',
+    items: ['Knihy vydané před rokem 1950', 'Mapy, plakáty, pohlednice', 'Komiksy a bibliofilie', 'Celé knihovny'],
+  },
+];
+
+const steps = [
+  {
+    title: 'Pošlete poptávku nebo zavolejte',
+    text: 'Vyplňte krátký formulář a přiložte fotky. Nebo nám rovnou zavolejte – domluvíme se hned.',
+  },
+  {
+    title: 'Ocenění zdarma',
+    text: 'Podle fotek dáme orientační cenu. Je-li potřeba, přijedeme se na věci podívat osobně.',
+  },
+  {
+    title: 'Platba a odvoz',
+    text: 'Když souhlasíte, zaplatíme na místě v hotovosti. Naložení i odvoz zajistíme sami.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Kolik za své věci dostanu?',
+    a: 'Cena závisí na stáří, stavu, značce a aktuální poptávce. Podle fotek vám zdarma řekneme orientační cenu, konečnou nabídku dostanete po prohlídce. Vše je nezávazné.',
+  },
+  {
+    q: 'Jak probíhá platba?',
+    a: 'Platíme v hotovosti ihned při převzetí věcí. Nemusíte na nic čekat.',
+  },
+  {
+    q: 'Kam za vámi přijedete?',
+    a: `Sídlíme ve Zvoli u Zábřehu a jezdíme po celé Moravě – mimo jiné ${SITE.region.slice(1).join(', ')} a okolí.`,
+  },
+  {
+    q: 'Vykupujete i jednotlivé kusy?',
+    a: 'Ano. Vykoupíme jeden předmět stejně jako celou sbírku, knihovnu nebo vybavení domu.',
+  },
+  {
+    q: 'Kolik stojí vyklizení pozůstalosti?',
+    a: 'Záleží na rozsahu a dostupnosti objektu. Po prohlídce dostanete nezávaznou cenu. Hodnotné věci od vás odkoupíme a jejich cenu odečteme z ceny vyklízení – často tak vyklizení vyjde levně nebo zcela zdarma.',
+  },
+  {
+    q: 'Musím věci sám zabalit a odnést?',
+    a: 'Ne. Naložení, zabalení i odvoz zajistíme vlastní dopravou. Vy se o nic starat nemusíte.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${SITE.url}/#firma`,
+    name: SITE.name,
+    description,
+    url: `${SITE.url}/`,
+    image: `${SITE.url}/og-image.jpg`,
+    telephone: SITE.phone,
+    email: SITE.email,
+    founder: { '@type': 'Person', name: SITE.operator.name },
+    taxID: SITE.operator.ico,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.operator.street,
+      addressLocality: SITE.operator.city,
+      postalCode: SITE.operator.zip,
+      addressRegion: 'Olomoucký kraj',
+      addressCountry: 'CZ',
+    },
+    areaServed: SITE.region.map((name) => ({ '@type': 'City', name })),
+    paymentAccepted: 'Hotovost',
+    makesOffer: categories
+      .map((c) => c.service)
+      .concat('Vyklízení pozůstalosti')
+      .map((name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#web`,
+    url: `${SITE.url}/`,
+    name: SITE.name,
+    inLanguage: 'cs-CZ',
+    publisher: { '@id': `${SITE.url}/#firma` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<Base title={title} description={description} jsonLd={jsonLd}>
+  <!-- HERO + FORMULÁŘ -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Výkup a vyklízení · celá Morava</p>
+        <h1>Výkup starožitností a vyklízení pozůstalostí</h1>
+        <p class="hero-lead">
+          Vykoupíme starožitnosti, retro nábytek, elektroniku i staré knihy. Ocenění zdarma, platba v hotovosti ihned
+          a odvoz zajistíme sami.
+        </p>
+        <ul class="benefits">
+          <li><Icon name="camera" size={22} /> <span><strong>Ocenění z fotek</strong> zdarma a nezávazně</span></li>
+          <li><Icon name="cash" size={22} /> <span><strong>Hotovost ihned</strong> při převzetí</span></li>
+          <li><Icon name="truck" size={22} /> <span><strong>Odvoz zajistíme</strong> vlastní dopravou</span></li>
+        </ul>
+        <div class="hero-actions">
+          <a href={`tel:${SITE.phone}`} class="btn btn-dark btn-lg">
+            <Icon name="phone" size={20} />
+            <span>Zavolat {SITE.phoneDisplay}</span>
+          </a>
+        </div>
+        <p class="hero-note">Volejte kdykoliv, případně se ozveme zpět.</p>
+      </div>
+      <LeadForm />
+    </div>
+  </section>
+
+  <!-- CO VYKUPUJEME -->
+  <section class="section" id="co-vykupujeme" aria-labelledby="h-vykup">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">Co vykupujeme</p>
+        <h2 id="h-vykup">Vykoupíme jednotlivé kusy i celé sbírky</h2>
+        <p>Nevíte, jestli má věc hodnotu? Pošlete fotku – poradíme zdarma.</p>
+      </header>
+      <div class="cards">
+        {
+          categories.map((c) => (
+            <article class="card">
+              <Picture
+                src={c.img}
+                alt={c.alt}
+                formats={['avif', 'webp']}
+                layout="constrained"
+                width={640}
+                height={480}
+                fit="cover"
+                sizes="(min-width: 1100px) 260px, (min-width: 640px) 45vw, 92vw"
+                loading="lazy"
+                decoding="async"
+                class="card-img"
+              />
+              <div class="card-body">
+                <h3>{c.title}</h3>
+                <ul class="checks">
+                  {c.items.map((i) => (
+                    <li>
+                      <Icon name="check" size={18} />
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+                <a href="#poptavka" class="card-link" data-service={c.service}>
+                  Nabídnout k výkupu <Icon name="arrow" size={18} />
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Máte doma něco starého?"
+    text="Pošlete pár fotek. Ozveme se s orientační cenou – zdarma a nezávazně."
+  />
+
+  <!-- VYKLÍZENÍ -->
+  <section class="section" id="vyklizeni" aria-labelledby="h-vyklizeni">
+    <div class="container split">
+      <Picture
+        src={imgCleanout}
+        alt="Prázdná vyklizená půda s dřevěnou podlahou"
+        formats={['avif', 'webp']}
+        layout="constrained"
+        width={720}
+        height={720}
+        sizes="(min-width: 900px) 45vw, 92vw"
+        loading="lazy"
+        decoding="async"
+        class="split-img"
+      />
+      <div>
+        <p class="eyebrow">Vyklízení pozůstalostí</p>
+        <h2 id="h-vyklizeni">Vyklidíme byt, dům i chatu – od půdy po sklep</h2>
+        <p>
+          Vyklízení po blízkých je náročné. Převezmeme ho za vás – citlivě, rychle a bez starostí. Cenné věci
+          odkoupíme a jejich hodnotu odečteme z ceny vyklízení.
+        </p>
+        <ul class="checks checks-lg">
+          <li><Icon name="check" size={20} /> Vyklizení domů, bytů, chat, půd a sklepů</li>
+          <li><Icon name="check" size={20} /> Vytřídění a odkup hodnotných věcí</li>
+          <li><Icon name="check" size={20} /> Odvoz a ekologická likvidace zbytku</li>
+          <li><Icon name="check" size={20} /> Nezávazná prohlídka a cena předem</li>
+        </ul>
+        <a href="#poptavka" class="btn btn-primary btn-lg" data-service="Vyklízení pozůstalosti">
+          <span>Poptat vyklizení</span>
+          <Icon name="arrow" size={20} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- JAK TO FUNGUJE -->
+  <section class="section section-alt" id="jak-to-funguje" aria-labelledby="h-proces">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">Jak to funguje</p>
+        <h2 id="h-proces">Tři kroky a máte hotovo</h2>
+      </header>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li class="step">
+              <span class="step-num" aria-hidden="true">
+                {i + 1}
+              </span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="center">
+        <a href="#poptavka" class="btn btn-primary btn-lg">
+          <span>Začít – poslat poptávku</span>
+          <Icon name="arrow" size={20} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBLAST PŮSOBNOSTI -->
+  <section class="section" id="kde-pusobime" aria-labelledby="h-oblast">
+    <div class="container narrow">
+      <header class="section-head">
+        <p class="eyebrow">Kde působíme</p>
+        <h2 id="h-oblast">Přijedeme za vámi po celé Moravě</h2>
+        <p>Sídlíme ve Zvoli u Zábřehu. Výkup i vyklízení zajišťujeme mimo jiné v těchto lokalitách:</p>
+      </header>
+      <ul class="tags">
+        {SITE.region.map((r) => <li>{r}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-alt" id="otazky" aria-labelledby="h-faq">
+    <div class="container narrow">
+      <header class="section-head">
+        <p class="eyebrow">Časté otázky</p>
+        <h2 id="h-faq">Na co se nás často ptáte</h2>
+      </header>
+      <div class="faq">
+        {
+          faq.map((f, i) => (
+            <details open={i === 0}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    dark
+    title="Ozvěte se ještě dnes"
+    text="Zavolejte nebo pošlete poptávku. Ocenění je zdarma a k ničemu vás nezavazuje."
+  />
+</Base>
