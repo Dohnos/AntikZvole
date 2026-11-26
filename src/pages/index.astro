@@ -6,7 +6,8 @@ import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { SITE } from '../data/site';
 
-import imgAntique from '../assets/img/hero_antique.jpg';
+import imgHero from '../assets/img/hero_antique.jpg';
+import imgAntique from '../assets/img/antique_detail.jpg';
 import imgFurniture from '../assets/img/antique_furniture.jpg';
 import imgRetro from '../assets/img/retro_items.jpg';
 import imgBooks from '../assets/img/old_books.jpg';
@@ -20,7 +21,7 @@ const categories = [
   {
     title: 'Starožitnosti',
     img: imgAntique,
-    alt: 'Starožitný psací stroj, kapesní hodinky a staré knihy',
+    alt: 'Starožitné kapesní hodinky, lupa a kniha v kožené vazbě',
     service: 'Výkup starožitností',
     items: ['Obrazy, grafiky, rámy', 'Hodiny, hodinky, stříbro', 'Porcelán, sklo, keramika', 'Šperky, mince, vyznamenání'],
   },
@@ -143,6 +144,21 @@ const jsonLd = [
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
+        <Picture
+          src={imgHero}
+          alt="Starožitný psací stroj, kapesní hodinky a staré knihy na dřevěném stole"
+          formats={['avif', 'webp']}
+          layout="constrained"
+          width={1024}
+          height={683}
+          fit="cover"
+          widths={[480, 720, 1024]}
+          sizes="(min-width: 1160px) 540px, (min-width: 960px) 48vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="hero-img"
+        />
         <p class="eyebrow">Výkup a vyklízení · celá Morava</p>
         <h1>Výkup starožitností a vyklízení pozůstalostí</h1>
         <p class="hero-lead">
